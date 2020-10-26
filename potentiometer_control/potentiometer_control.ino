@@ -19,19 +19,19 @@
 
 #include <Servo.h>
 
-constexpr int sensor_pin = A0;
-constexpr int button_pin = 2;
-constexpr int enable_edit_pin = 3;
-constexpr int servo_0_pin = 5;
-constexpr int servo_1_pin = 6;
-constexpr int servo_2_pin = 9;
-constexpr int servo_3_pin = 10;
+constexpr int sensor_pin {A0};
+constexpr int button_pin {2};
+constexpr int enable_edit_pin {3};
+constexpr int servo_0_pin {5};
+constexpr int servo_1_pin {6};
+constexpr int servo_2_pin {9};
+constexpr int servo_3_pin {10};
 constexpr int led_pins[4] = {13, 12, 8, 7};
 constexpr int update_interval {50};
 
 // Default servo positions
 int servo_pos[4] {0, 0, 0, 0};
-int last_check_millis = 0;
+int last_check_millis {0};
 
 volatile int current_servo {0};
 volatile int last_change_millis {0};
