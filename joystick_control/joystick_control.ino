@@ -8,8 +8,8 @@
  * - Pin 3: Button (Enable/Disable editing) [Interrupt required]
  * - Pin 5: Servo 0 signal [PWM required]
  * - Pin 6: Servo 1 signal [PWM required]
- * - Pin 7: Servo 2 signal [PWM required]
- * - Pin 8: Servo 3 signal [PWM required]
+ * - Pin 9: Servo 2 signal [PWM required]
+ * - Pin 10: Servo 3 signal [PWM required]
  * 
  * Example serial monitor output
  * 
@@ -28,7 +28,7 @@ constexpr int servo_1_pin {6};
 constexpr int servo_2_pin {9};
 constexpr int servo_3_pin {10};
 
-int servo_pos[4] {0, 0, 0, 0};
+int servo_pos[4] {0, 180, 0, 0};
 int last_change_millis {0};
 int last_edit_millis {0};
 

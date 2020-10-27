@@ -1,0 +1,32 @@
+Pin 5 - Main arm (left servo when viewed from claw)
+Pin 6 - Side arm (right servo when viewed from claw)
+
+Initialise facing left 
+10 140 180 x
+
+Pick up position (left)
+90 110 180 x
+
+Stacking position 1 (front)
+97 120 80 x
+
+Stacking position 2 (front)
+83 125 80 x
+
+Stacking position 3 (front)
+71 134 80 x
+
+Stacking position 4 (front)
+67 147 80 x
+	
+10 140 180
+90 110 180
+97 120 80
+83 125 80
+
+Stacking position 3 (front)
+71 134 80 x
+
+Stacking position 4 (front)
+67 147 80 x
+
