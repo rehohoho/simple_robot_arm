@@ -1,3 +1,22 @@
+/*
+ * Challenge code
+ * 
+ * Joystick control + hard-coded sequence
+ * 
+ * Wiring
+ * - A0: VRX
+ * - A1: VRY
+ * - Pin 2: SW [Interrupt required]
+ * - Pin 3: Button (Enable/Disable editing) [Interrupt required]
+ * - Pin 4: Start button (start hardcoded sequence)
+ * - Pin 5: Servo 0 signal [PWM required]
+ * - Pin 6: Servo 1 signal [PWM required]
+ * - Pin 7: Mode button (toggle between joystick/hardcode)
+ * - Pin 9: Servo 2 signal [PWM required]
+ * - Pin 10: Servo 3 signal [PWM required]
+ */
+
+
 #include <Servo.h>
 
 constexpr int servo0_pin {5};
@@ -6,18 +25,30 @@ constexpr int servo2_pin {9};
 constexpr int servo3_pin {10};
 constexpr int start_btn {4};
 
+constexpr int x_pin {A0};
+constexpr int y_pin {A1};
+constexpr int joystick_btn_pin {2};
+constexpr int button_pin {3};
+constexpr int mode_pin {7};
+
 constexpr int interval {10};
 constexpr float cheat_factor {0};
 constexpr int TURN_ANGLE {20};
-constexpr int MOTION_TIME {5000};
+constexpr int MOTION_TIME {3000};
 constexpr int CLAW_CLOSE_TIME {2000};
 constexpr int CLAW_CLOSE_ANGLE {100};
 constexpr int CLAW_OPEN_ANGLE {0};
 
+int last_change_millis {0};
+int last_edit_millis {0};
+
+volatile int current_servo {0};
+volatile int enable_edit {0};
+
 int pos[4] {0, 180, 0, CLAW_OPEN_ANGLE};
 
 int home_pos[4] {0, 180, 0, CLAW_OPEN_ANGLE};
-int home_pos_close[4] {0, 180, 0, CLAW_CLOSE_ANGLE};
+int home_pos_close[4] {home_pos[0], home_pos[1], home_pos[2], CLAW_CLOSE_ANGLE};
 int pick_up_pos[4] {28, 110, 0, CLAW_OPEN_ANGLE};
 int level_1[4] {68, 137, 0, CLAW_CLOSE_ANGLE}; 
 int level_2[4] {62, 145, 0, CLAW_CLOSE_ANGLE}; 
@@ -26,11 +57,32 @@ int level_4[4] {97, 120, 0, CLAW_CLOSE_ANGLE};
 int level_5[4] {97, 120, 0, CLAW_CLOSE_ANGLE}; 
 int level_6[4] {97, 120, 0, CLAW_CLOSE_ANGLE}; 
 
+int mode {0};
+int last_mode_millis {0};
+
 
 Servo servo0;
 Servo servo1;
 Servo servo2;
 Servo servo3;
+
+void isr()
+{
+  if (millis() - last_change_millis > 200)
+  {
+    current_servo = (current_servo + 2) % 4;
+    last_change_millis = millis();
+  }
+}
+
+void isr_2()
+{
+  if (millis() - last_edit_millis > 200)
+  {
+    enable_edit = !enable_edit;
+    last_edit_millis = millis();    
+  }
+}
 
 void serialFlush()
 {
@@ -137,62 +189,123 @@ void setup()
   servo3.write(pos[3]);
 
   pinMode(start_btn, INPUT_PULLUP);
+  pinMode(x_pin, INPUT);
+  pinMode(y_pin, INPUT);
+  pinMode(joystick_btn_pin, INPUT_PULLUP);
+  pinMode(button_pin, INPUT_PULLUP);
+  pinMode(mode_pin, INPUT_PULLUP);
+
+  attachInterrupt(digitalPinToInterrupt(button_pin), isr, FALLING);
+  attachInterrupt(digitalPinToInterrupt(joystick_btn_pin), isr_2, FALLING);
 
   Serial.println("READY. Waiting for serial input to start.");
 }
 
 void loop() 
 {
-  // Start program on serial input
-  if (Serial.available() > 0 or digitalRead(start_btn) == 0) {
-    Serial.println("---STARTING---");
-    serialFlush();
-
-    
-    pickup();
-    grip();
-    base_close();
-    Serial.println("---LVL 1---");
-    move_gently_2(level_1);
-    ungrip();
-    turn_abit();
-    base();
-    
-    pickup();
-    grip();
-    base_close();
-    Serial.println("---LVL 2---");
-    move_gently_2(level_2);
-    ungrip();
-    turn_abit();
-    base();
-
-//    pickup();
-//    grip();
-//    Serial.println("---LVL 3---");
-//    move_gently_2(level_3);
-//    ungrip();
-//    base();
-
-//    pickup();
-//    grip();
-//    Serial.println("---LVL 4---");
-//    move_gently_2(level_4);
-//    ungrip();
-//    base();
-
-//    pickup();
-//    grip();
-//    Serial.println("---LVL 5---");
-//    move_gently_2(level_5);
-//    ungrip();
-//    base();
-
-//    pickup();
-//    grip();
-//    Serial.println("---LVL 6---");
-//    move_gently_2(level_6);
-//    ungrip();
-//    base();
+  if (!digitalRead(mode_pin) && millis() - last_mode_millis > 1000)
+  {
+    mode = !mode;
+    last_mode_millis = millis();
   }
+  
+  if (mode == 0)
+  {
+    Serial.println("...");
+    // Start program on serial input
+    if (Serial.available() > 0 or digitalRead(start_btn) == 0) {
+      Serial.println("---STARTING---");
+      serialFlush();
+  
+      
+      pickup();
+      grip();
+      base_close();
+      Serial.println("---LVL 1---");
+      move_gently_2(level_1);
+      ungrip();
+      turn_abit();
+      base();
+      
+      pickup();
+      grip();
+      base_close();
+      Serial.println("---LVL 2---");
+      move_gently_2(level_2);
+      ungrip();
+      turn_abit();
+      base();
+  
+  //    pickup();
+  //    grip();
+  //    Serial.println("---LVL 3---");
+  //    move_gently_2(level_3);
+  //    ungrip();
+  //    base();
+  
+  //    pickup();
+  //    grip();
+  //    Serial.println("---LVL 4---");
+  //    move_gently_2(level_4);
+  //    ungrip();
+  //    base();
+  
+  //    pickup();
+  //    grip();
+  //    Serial.println("---LVL 5---");
+  //    move_gently_2(level_5);
+  //    ungrip();
+  //    base();
+  
+  //    pickup();
+  //    grip();
+  //    Serial.println("---LVL 6---");
+  //    move_gently_2(level_6);
+  //    ungrip();
+  //    base();
+    }
+  }
+  else {
+    int x_input {analogRead(A0)};
+    int y_input {analogRead(A1)};
+    int btn_input {digitalRead(2)};
+  //  Serial.print(x_input);
+  //  Serial.print(" ");
+  //  Serial.print(y_input);
+  //  Serial.print(" ");
+  //  Serial.println(btn_input);
+  //  Serial.println(pos);
+  
+    if (x_input > 900 && enable_edit)
+    {
+      if (pos[current_servo] < 180)
+        pos[current_servo] += 1; 
+    }
+    else if (x_input < 300 && enable_edit)
+    {
+      if (pos[current_servo] > 0)
+        pos[current_servo] -= 1;
+    }
+    
+    if (y_input < 300 && enable_edit)
+    {
+      if (pos[current_servo + 1] < 180)
+        pos[current_servo + 1] += 1; 
+    }
+    else if (y_input > 900 && enable_edit)
+    {
+      if (pos[current_servo + 1] > 0)
+        pos[current_servo + 1] -= 1;
+    }
+    
+  
+    servo0.write(pos[0]);
+    servo1.write(pos[1]);
+    servo2.write(pos[2]);
+    servo3.write(pos[3]);
+    Serial.print("Servo "); Serial.print(current_servo); Serial.print("(x) and "); Serial.print(current_servo + 1); Serial.print("(y)"); Serial.print("\t");
+    Serial.print("Editing: "); Serial.print(enable_edit); Serial.print("\t"); 
+    Serial.print(pos[0]); Serial.print(" "); Serial.print(pos[1]); Serial.print(" ");
+    Serial.print(pos[2]); Serial.print(" "); Serial.println(pos[3]);
+   }
 }
