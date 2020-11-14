@@ -4,24 +4,27 @@ constexpr int servo0_pin {5};
 constexpr int servo1_pin {6};
 constexpr int servo2_pin {9};
 constexpr int servo3_pin {10};
+constexpr int start_btn {4};
 
 constexpr int interval {10};
 constexpr float cheat_factor {0};
-constexpr int MOTION_TIME {2000};
-constexpr int CLAW_CLOSE_TIME {1000};
-constexpr int CLAW_CLOSE_ANGLE {90};
-constexpr int CLAW_OPEN_ANGLE {180};
+constexpr int TURN_ANGLE {20};
+constexpr int MOTION_TIME {5000};
+constexpr int CLAW_CLOSE_TIME {2000};
+constexpr int CLAW_CLOSE_ANGLE {100};
+constexpr int CLAW_OPEN_ANGLE {0};
 
-int pos[4] {10, 140, 180, CLAW_OPEN_ANGLE};
+int pos[4] {0, 180, 0, CLAW_OPEN_ANGLE};
 
-int home_pos[4] {10, 140, 180, CLAW_OPEN_ANGLE};
-int pick_up_pos[4] {90, 110, 180, CLAW_OPEN_ANGLE};
-int level_1[4] {97, 120, 80, CLAW_CLOSE_ANGLE}; 
-int level_2[4] {97, 120, 80, CLAW_CLOSE_ANGLE}; 
-int level_3[4] {83, 125, 80, CLAW_CLOSE_ANGLE}; 
-int level_4[4] {97, 120, 80, CLAW_CLOSE_ANGLE}; 
-int level_5[4] {97, 120, 80, CLAW_CLOSE_ANGLE}; 
-int level_6[4] {97, 120, 80, CLAW_CLOSE_ANGLE}; 
+int home_pos[4] {0, 180, 0, CLAW_OPEN_ANGLE};
+int home_pos_close[4] {0, 180, 0, CLAW_CLOSE_ANGLE};
+int pick_up_pos[4] {28, 110, 0, CLAW_OPEN_ANGLE};
+int level_1[4] {68, 137, 0, CLAW_CLOSE_ANGLE}; 
+int level_2[4] {62, 145, 0, CLAW_CLOSE_ANGLE}; 
+int level_3[4] {79, 146, 0, CLAW_CLOSE_ANGLE}; 
+int level_4[4] {97, 120, 0, CLAW_CLOSE_ANGLE}; 
+int level_5[4] {97, 120, 0, CLAW_CLOSE_ANGLE}; 
+int level_6[4] {97, 120, 0, CLAW_CLOSE_ANGLE}; 
 
 
 Servo servo0;
@@ -29,13 +32,15 @@ Servo servo1;
 Servo servo2;
 Servo servo3;
 
-void serialFlush(){
+void serialFlush()
+{
   while(Serial.available() > 0) {
     char t = Serial.read();
   }
 }   
 
-void move_gently_2(int final_pos [4], int motion_time = MOTION_TIME) {
+void move_gently_2(int final_pos [4], int motion_time = MOTION_TIME) 
+{
   Serial.print("Moving to: "); Serial.print(final_pos[0]); Serial.print(" ");
   Serial.print(final_pos[1]); Serial.print(" "); Serial.print(final_pos[2]);
   Serial.print(" "); Serial.println(final_pos[3]);
@@ -97,12 +102,25 @@ void ungrip() {
 
 void pickup() {
   Serial.println("---Picking up---");
+  int temp_pos[4] {pick_up_pos[0], pick_up_pos[1], pick_up_pos[2] + 20, pick_up_pos[3]};
+  move_gently_2(temp_pos);
   move_gently_2(pick_up_pos);  
 }
 
 void base() {
   Serial.println("---Homing---");
   move_gently_2(home_pos); 
+}
+
+void base_close() {
+  Serial.println("---Homing---");
+  move_gently_2(home_pos_close); 
+}
+
+void turn_abit() {
+  Serial.println("---Turning---");
+  int grip_pos[4] {pos[0], pos[1], pos[2] + TURN_ANGLE, pos[3]};
+  move_gently_2(grip_pos);  
 }
 
 void setup() 
@@ -118,30 +136,63 @@ void setup()
   servo2.write(pos[2]);
   servo3.write(pos[3]);
 
+  pinMode(start_btn, INPUT_PULLUP);
+
   Serial.println("READY. Waiting for serial input to start.");
 }
 
 void loop() 
 {
   // Start program on serial input
-  if (Serial.available() > 0) {
+  if (Serial.available() > 0 or digitalRead(start_btn) == 0) {
     Serial.println("---STARTING---");
     serialFlush();
 
     
     pickup();
     grip();
+    base_close();
     Serial.println("---LVL 1---");
     move_gently_2(level_1);
     ungrip();
+    turn_abit();
     base();
     
     pickup();
     grip();
+    base_close();
     Serial.println("---LVL 2---");
     move_gently_2(level_2);
     ungrip();
+    turn_abit();
     base();
-    
+
+//    pickup();
+//    grip();
+//    Serial.println("---LVL 3---");
+//    move_gently_2(level_3);
+//    ungrip();
+//    base();
+
+//    pickup();
+//    grip();
+//    Serial.println("---LVL 4---");
+//    move_gently_2(level_4);
+//    ungrip();
+//    base();
+
+//    pickup();
+//    grip();
+//    Serial.println("---LVL 5---");
+//    move_gently_2(level_5);
+//    ungrip();
+//    base();
+
+//    pickup();
+//    grip();
+//    Serial.println("---LVL 6---");
+//    move_gently_2(level_6);
+//    ungrip();
+//    base();
   }
 }

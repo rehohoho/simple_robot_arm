@@ -28,7 +28,7 @@ constexpr int servo_1_pin {6};
 constexpr int servo_2_pin {9};
 constexpr int servo_3_pin {10};
 
-int servo_pos[4] {0, 180, 0, 90};
+int servo_pos[4] {0, 180, 0, 0};
 int last_change_millis {0};
 int last_edit_millis {0};
 
