@@ -66,5 +66,5 @@ void servoSweepTest() {
 }
 
 void zeroAllServos() {
-    
+    writeServo(0, 0, 0, 0);
 }
