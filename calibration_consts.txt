@@ -1,9 +1,9 @@
-int home_pos[4] {0, 180, 0, CLAW_OPEN_ANGLE};
+int home_pos[4] {0, 180, 100, CLAW_OPEN_ANGLE};
 int home_pos_close[4] {home_pos[0], home_pos[1], home_pos[2], CLAW_CLOSE_ANGLE};
-int pick_up_pos[4] {18, 75, 0, CLAW_OPEN_ANGLE};
-int level_1[4] {26, 103, 0, CLAW_CLOSE_ANGLE}; 
-int level_2[4] {22, 110, 0, CLAW_CLOSE_ANGLE}; 
-int level_3[4] {20, 116, 0, CLAW_CLOSE_ANGLE}; 
-int level_4[4] {19, 121, 0, CLAW_CLOSE_ANGLE}; 
-int level_5[4] {97, 120, 0, CLAW_CLOSE_ANGLE}; 
-int level_6[4] {97, 120, 0, CLAW_CLOSE_ANGLE};  
+int pick_up_pos[4] {20 + pick_up_offset[0], 78 + pick_up_offset[1], 0 + pick_up_offset[2], CLAW_OPEN_ANGLE + pick_up_offset[3]};
+int level_1[4] {26 + main_offset[0], 101 + main_offset[1], 0 + main_offset[2], CLAW_CLOSE_ANGLE + main_offset[3]}; 
+int level_2[4] {24 + main_offset[0], 105 + main_offset[1], 0 + main_offset[2], CLAW_CLOSE_ANGLE + main_offset[3]}; 
+int level_3[4] {22 + main_offset[0], 113 + main_offset[1], 0 + main_offset[2], CLAW_CLOSE_ANGLE + main_offset[3]}; 
+int level_4[4] {21 + main_offset[0], 120 + main_offset[1], 0 + main_offset[2], CLAW_CLOSE_ANGLE + main_offset[3]}; 
+int level_5[4] {20 + main_offset[0], 126 + main_offset[1], 0 + main_offset[2], CLAW_CLOSE_ANGLE + main_offset[3]}; 
+int level_6[4] {19 + main_offset[0], 133 + main_offset[1], 0 + main_offset[2], CLAW_CLOSE_ANGLE + main_offset[3]};
