@@ -7,7 +7,7 @@
  * - A0: VRX
  * - A1: VRY
  * - Pin 2: SW [Interrupt required]
- * - Pin 3: Button (Enable/Disable editing) [Interrupt required]
+ * - Pin 3: Button (Change joystick servo) [Interrupt required]
  * - Pin 4: Start button (start hardcoded sequence)
  * - Pin 5: Servo 0 signal [PWM required]
  * - Pin 6: Servo 1 signal [PWM required]
@@ -227,14 +227,14 @@ void loop()
       turn_abit();
       base();
       
-      pickup();
-      grip();
-      base_close();
-      Serial.println("---LVL 2---");
-      move_gently_2(level_2);
-      ungrip();
-      turn_abit();
-      base();
+//      pickup();
+//      grip();
+//      base_close();
+//      Serial.println("---LVL 2---");
+//      move_gently_2(level_2);
+//      ungrip();
+//      turn_abit();
+//      base();
   
   //    pickup();
   //    grip();
