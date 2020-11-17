@@ -47,15 +47,18 @@ volatile int enable_edit {0};
 
 int pos[4] {0, 180, 0, CLAW_OPEN_ANGLE};
 
+int pick_up_offset [4] {0, 0, 0, 0};
+int main_offset [4] {0, 0, 0, 0};
+
 int home_pos[4] {0, 180, 0, CLAW_OPEN_ANGLE};
 int home_pos_close[4] {home_pos[0], home_pos[1], home_pos[2], CLAW_CLOSE_ANGLE};
-int pick_up_pos[4] {28, 110, 0, CLAW_OPEN_ANGLE};
-int level_1[4] {68, 137, 0, CLAW_CLOSE_ANGLE}; 
-int level_2[4] {62, 145, 0, CLAW_CLOSE_ANGLE}; 
-int level_3[4] {79, 146, 0, CLAW_CLOSE_ANGLE}; 
-int level_4[4] {97, 120, 0, CLAW_CLOSE_ANGLE}; 
-int level_5[4] {97, 120, 0, CLAW_CLOSE_ANGLE}; 
-int level_6[4] {97, 120, 0, CLAW_CLOSE_ANGLE}; 
+int pick_up_pos[4] {18 + pick_up_offset[0], 75 + pick_up_offset[1], 0 + pick_up_offset[2], CLAW_OPEN_ANGLE + pick_up_offset[3]};
+int level_1[4] {26 + main_offset[0], 103 + main_offset[1], 0 + main_offset[2], CLAW_CLOSE_ANGLE + main_offset[3]}; 
+int level_2[4] {22 + main_offset[0], 110 + main_offset[1], 0 + main_offset[2], CLAW_CLOSE_ANGLE}+ main_offset[3]; 
+int level_3[4] {20 + main_offset[0], 116 + main_offset[1], 0 + main_offset[2], CLAW_CLOSE_ANGLE}+ main_offset[3]; 
+int level_4[4] {19 + main_offset[0], 121 + main_offset[1], 0 + main_offset[2], CLAW_CLOSE_ANGLE}+ main_offset[3]; 
+int level_5[4] {97 + main_offset[0], 120 + main_offset[1], 0 + main_offset[2], CLAW_CLOSE_ANGLE}+ main_offset[3]; 
+int level_6[4] {97 + main_offset[0], 120 + main_offset[1], 0 + main_offset[2], CLAW_CLOSE_ANGLE}+ main_offset[3];  
 
 int mode {0};
 int last_mode_millis {0};
@@ -216,9 +219,8 @@ void loop()
     if (Serial.available() > 0 or digitalRead(start_btn) == 0) {
       Serial.println("---STARTING---");
       serialFlush();
-  
-      
-      pickup();
+
+  //TEMP CODE FOR TESTING
       grip();
       base_close();
       Serial.println("---LVL 1---");
@@ -226,6 +228,40 @@ void loop()
       ungrip();
       turn_abit();
       base();
+
+      grip();
+      base_close();
+      Serial.println("---LVL 2---");
+      move_gently_2(level_2);
+      ungrip();
+      turn_abit();
+      base();
+
+      grip();
+      base_close();
+      Serial.println("---LVL 3---");
+      move_gently_2(level_3);
+      ungrip();
+      turn_abit();
+      base();
+
+      grip();
+      base_close();
+      Serial.println("---LVL 4---");
+      move_gently_2(level_4);
+      ungrip();
+      turn_abit();
+      base();
+  
+
+//      pickup();
+//      grip();
+//      base_close();
+//      Serial.println("---LVL 1---");
+//      move_gently_2(level_1);
+//      ungrip();
+//      turn_abit();
+//      base();
       
 //      pickup();
 //      grip();
