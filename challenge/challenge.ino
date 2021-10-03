@@ -113,7 +113,8 @@ void move_gently_2(int final_pos [4], int motion_time = MOTION_TIME)
     for (int i {0}; i < 4; ++i) 
     {
       int current_time = millis() - motion_start;
-      int angle = motion_curve(start_pos_arr[i], final_pos[i], motion_time, current_time);
+//      int angle = motion_curve(start_pos_arr[i], final_pos[i], motion_time, current_time);
+      int angle = constant_motion_curve(start_pos_arr[i], final_pos[i], motion_time, current_time);
       pos[i] = angle;
     } 
     servo0.write(pos[0]);
@@ -140,6 +141,21 @@ float motion_curve(int start_pos, int end_pos, int motion_time, int current_time
 
   float c = (b-a) / 2;
   float result = c * (cbrt((x - (t/2.0))/(t/2.0))) + c + a;
+  return result;
+}
+
+float constant_motion_curve(int start_pos, int end_pos, int motion_time, int current_time)
+{
+  if (current_time > motion_time)
+  {
+    return end_pos;
+  }
+  float a = start_pos;
+  float b = end_pos;
+  float t = motion_time;
+  float x = current_time;
+
+  float result = a + (b-a) * (x/t);
   return result;
 }
 
@@ -206,6 +222,7 @@ void setup()
 
 void loop() 
 {
+  Serial.println(digitalRead(mode_pin));
   if (!digitalRead(mode_pin) && millis() - last_mode_millis > 1000)
   {
     mode = !mode;
